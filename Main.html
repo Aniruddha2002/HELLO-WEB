@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Party Welcome!</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Confetti JS for realistic party popper effect -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700;900&display=swap');
+
+body,
+html {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    font-family: 'Outfit', sans-serif;
+    background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab, #f6d365, #fda085);
+    background-size: 400% 400%;
+    animation: gradientBG 12s ease infinite;
+    overflow: hidden;
+    color: white;
+}
+
+@keyframes gradientBG {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+/* Glassmorphism Card */
+#input-section {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 24px;
+    padding: 60px 50px;
+    text-align: center;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+    transition: opacity 0.5s ease;
+    z-index: 10;
+    width: 90%;
+    max-width: 400px;
+}
+
+#input-section h1 {
+    font-size: 2.8rem;
+    font-weight: 800;
+    margin-top: 0;
+    margin-bottom: 30px;
+    background: linear-gradient(to right, #00f2fe, #4facfe);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+input[type="text"] {
+    width: 100%;
+    padding: 18px 20px;
+    font-size: 1.2rem;
+    border: none;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.08);
+    color: white;
+    outline: none;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    margin-bottom: 30px;
+    box-sizing: border-box;
+    font-family: 'Outfit', sans-serif;
+    text-align: center;
+}
+
+input[type="text"]:focus {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: #4facfe;
+    box-shadow: 0 0 20px rgba(79, 172, 254, 0.5);
+}
+
+input[type="text"]::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+input.error {
+    border-color: #ff4757 !important;
+    animation: shake 0.4s;
+}
+
+@keyframes shake {
+    0% {
+        transform: translateX(0);
+    }
+
+    25% {
+        transform: translateX(-5px);
+    }
+
+    50% {
+        transform: translateX(5px);
+    }
+
+    75% {
+        transform: translateX(-5px);
+    }
+
+    100% {
+        transform: translateX(0);
+    }
+}
+
+button {
+    padding: 16px 45px;
+    font-size: 1.3rem;
+    font-weight: 700;
+    border: none;
+    border-radius: 14px;
+    background: linear-gradient(45deg, #4facfe, #00f2fe);
+    color: white;
+    cursor: pointer;
+    font-family: 'Outfit', sans-serif;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 20px rgba(0, 242, 254, 0.3);
+    width: 100%;
+}
+
+button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 25px rgba(0, 242, 254, 0.5);
+    background: linear-gradient(45deg, #00f2fe, #4facfe);
+}
+
+button:active {
+    transform: translateY(1px);
+}
+
+/* Animation Section */
+#animation-section {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1;
+}
+
+#welcome-text {
+    position: absolute;
+    top: 35%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.5);
+    font-size: 4vw;
+    font-weight: 900;
+    text-align: center;
+    opacity: 0;
+    transition: all 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    text-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    line-height: 1.2;
+    white-space: nowrap;
+}
+
+#welcome-text.show {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+}
+
+.highlight-name {
+    background: linear-gradient(135deg, #ffe53b 0%, #ff2525 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.3));
+    font-size: 7vw;
+    display: inline-block;
+    margin-top: 10px;
+}
+
+/* Ground Line */
+.ground {
+    position: absolute;
+    bottom: 20%;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+}
+
+/* Stickman Container */
+#stickman-container {
+    position: absolute;
+    bottom: calc(20% + 2px);
+    left: -200px;
+    transition: left 3s linear, transform 3s linear;
+}
+
+/* Stickman */
+.stickman {
+    position: relative;
+    width: 120px;
+    height: 250px;
+    filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.3));
+    z-index: 2;
+}
+
+/* Head & Face */
+.head {
+    width: 65px;
+    height: 75px;
+    position: absolute;
+    top: 0;
+    left: 27px;
+    z-index: 3;
+}
+
+.face {
+    width: 100%;
+    height: 100%;
+    background: #f1c27d;
+    border-radius: 40% 40% 50% 50%;
+    position: relative;
+    box-shadow: inset -4px -4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.hair {
+    width: 75px;
+    height: 35px;
+    background: #4a3018;
+    position: absolute;
+    top: -5px;
+    left: -5px;
+    border-radius: 50px 50px 10px 10px;
+    z-index: 2;
+}
+
+.eye {
+    width: 8px;
+    height: 8px;
+    background: #222;
+    border-radius: 50%;
+    position: absolute;
+    top: 35px;
+}
+
+.eye.left {
+    left: 18px;
+}
+
+.eye.right {
+    right: 18px;
+}
+
+.smile {
+    width: 20px;
+    height: 10px;
+    border-bottom: 3px solid #cc8e5e;
+    border-radius: 0 0 20px 20px;
+    position: absolute;
+    top: 50px;
+    left: 22px;
+}
+
+/* Torso & Clothes */
+.torso {
+    width: 50px;
+    height: 85px;
+    position: absolute;
+    top: 70px;
+    left: 35px;
+    z-index: 2;
+}
+
+.shirt {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom, #00f2fe, #4facfe);
+    border-radius: 15px 15px 5px 5px;
+    box-shadow: inset -5px -5px 15px rgba(0, 0, 0, 0.15);
+}
+
+.collar {
+    width: 24px;
+    height: 10px;
+    background: #fff;
+    position: absolute;
+    top: 0;
+    left: 13px;
+    border-radius: 0 0 10px 10px;
+}
+
+/* Arms */
+.arm {
+    width: 16px;
+    height: 90px;
+    position: absolute;
+    top: 75px;
+    transform-origin: 8px 8px;
+    z-index: 1;
+}
+
+.arm-left {
+    left: 24px;
+    z-index: 1;
+}
+
+.arm-right {
+    left: 80px;
+    z-index: 3;
+}
+
+.sleeve {
+    width: 100%;
+    height: 50px;
+    background: #00f2fe;
+    border-radius: 8px 8px 0 0;
+}
+
+.arm-right .sleeve {
+    background: #4facfe;
+}
+
+.hand {
+    width: 16px;
+    height: 40px;
+    background: #f1c27d;
+    border-radius: 0 0 8px 8px;
+    position: absolute;
+    top: 50px;
+}
+
+/* Legs */
+.leg {
+    width: 22px;
+    height: 100px;
+    position: absolute;
+    top: 145px;
+    transform-origin: 11px 10px;
+    z-index: 1;
+}
+
+.leg-left {
+    left: 35px;
+}
+
+.leg-right {
+    left: 63px;
+}
+
+.pant {
+    width: 100%;
+    height: 80px;
+    background: #1a2a6c;
+    border-radius: 5px;
+    box-shadow: inset -3px 0 10px rgba(0, 0, 0, 0.2);
+}
+
+.shoe {
+    width: 28px;
+    height: 16px;
+    background: #222;
+    position: absolute;
+    top: 80px;
+    left: -3px;
+    border-radius: 10px 15px 5px 5px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+/* Default Poses */
+.arm-left {
+    transform: rotate(15deg);
+    transition: transform 0.3s;
+}
+
+.arm-right {
+    transform: rotate(-15deg);
+    transition: transform 0.3s;
+}
+
+.leg-left {
+    transform: rotate(15deg);
+    transition: transform 0.3s;
+}
+
+.leg-right {
+    transform: rotate(-15deg);
+    transition: transform 0.3s;
+}
+
+/* Walking Animation */
+.walking .stickman {
+    animation: bobbing 0.5s infinite ease-in-out;
+}
+
+@keyframes bobbing {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(8px);
+    }
+}
+
+.walking .arm-left {
+    animation: swingArmLeft 0.8s infinite ease-in-out;
+}
+
+.walking .arm-right {
+    animation: swingArmRight 0.8s infinite ease-in-out;
+}
+
+.walking .leg-left {
+    animation: swingLegLeft 0.8s infinite ease-in-out;
+}
+
+.walking .leg-right {
+    animation: swingLegRight 0.8s infinite ease-in-out;
+}
+
+@keyframes swingArmLeft {
+
+    0%,
+    100% {
+        transform: rotate(45deg);
+    }
+
+    50% {
+        transform: rotate(-45deg);
+    }
+}
+
+@keyframes swingArmRight {
+
+    0%,
+    100% {
+        transform: rotate(-45deg);
+    }
+
+    50% {
+        transform: rotate(45deg);
+    }
+}
+
+@keyframes swingLegLeft {
+
+    0%,
+    100% {
+        transform: rotate(-45deg);
+    }
+
+    50% {
+        transform: rotate(35deg);
+    }
+}
+
+@keyframes swingLegRight {
+
+    0%,
+    100% {
+        transform: rotate(35deg);
+    }
+
+    50% {
+        transform: rotate(-45deg);
+    }
+}
+
+/* Celebrating Animation */
+.celebrating .arm-left {
+    transform: rotate(150deg);
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.celebrating .arm-right {
+    transform: rotate(-150deg);
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.celebrating .leg-left {
+    transform: rotate(15deg);
+    transition: transform 0.3s;
+}
+
+.celebrating .leg-right {
+    transform: rotate(-15deg);
+    transition: transform 0.3s;
+}
+
+.celebrating .stickman {
+    animation: jump 0.6s ease-in-out 3;
+}
+
+@keyframes jump {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-40px);
+    }
+}
+
+/* Waving Animation */
+.waving .arm-left {
+    transform: rotate(15deg);
+    transition: transform 0.3s;
+}
+
+.waving .leg-left {
+    transform: rotate(10deg);
+    transition: transform 0.3s;
+}
+
+.waving .leg-right {
+    transform: rotate(-10deg);
+    transition: transform 0.3s;
+}
+
+.waving .arm-right {
+    transform-origin: 8px 8px;
+    animation: waveArm 0.5s infinite alternate ease-in-out;
+}
+
+@keyframes waveArm {
+    0% {
+        transform: rotate(-120deg);
+    }
+
+    100% {
+        transform: rotate(-170deg);
+    }
+}
+
+/* Final Pose after Waving */
+.final-pose .arm-left {
+    transform: rotate(150deg);
+    transition: transform 0.4s;
+}
+
+.final-pose .arm-right {
+    transform: rotate(-150deg);
+    transition: transform 0.4s;
+}
+
+.final-pose .leg-left {
+    transform: rotate(10deg);
+    transition: transform 0.4s;
+}
+
+.final-pose .leg-right {
+    transform: rotate(-10deg);
+    transition: transform 0.4s;
+}
+
+/* Responsive text sizes */
+@media (max-width: 768px) {
+    #welcome-text {
+        font-size: 8vw;
+    }
+
+    .highlight-name {
+        font-size: 14vw;
+    }
+}
+    </style>
+</head>
+
+<body>
+    <div id="input-section">
+        <h1>Welcome Portal</h1>
+        <input type="text" id="name-input" placeholder="Enter your name..." autocomplete="off">
+        <br>
+        <button id="start-btn">Let's Party!</button>
+    </div>
+
+    <div id="animation-section">
+        <div id="welcome-text"></div>
+        <div class="ground"></div>
+        <div id="stickman-container">
+            <div id="stickman" class="stickman">
+                <div class="head">
+                    <div class="hair"></div>
+                    <div class="face">
+                        <div class="eye left"></div>
+                        <div class="eye right"></div>
+                        <div class="smile"></div>
+                    </div>
+                </div>
+                <div class="torso">
+                    <div class="shirt"></div>
+                    <div class="collar"></div>
+                </div>
+                <div class="arm arm-left">
+                    <div class="sleeve"></div>
+                    <div class="hand"></div>
+                </div>
+                <div class="arm arm-right">
+                    <div class="sleeve"></div>
+                    <div class="hand"></div>
+                </div>
+                <div class="leg leg-left">
+                    <div class="pant"></div>
+                    <div class="shoe"></div>
+                </div>
+                <div class="leg leg-right">
+                    <div class="pant"></div>
+                    <div class="shoe"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+    const startBtn = document.getElementById('start-btn');
+    const nameInput = document.getElementById('name-input');
+
+    // Make enter key trigger the button
+    nameInput.addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') {
+            startBtn.click();
+        }
+    });
+
+    startBtn.addEventListener('click', () => {
+        const nameValue = nameInput.value.trim();
+        if (!nameValue) {
+            nameInput.classList.add('error');
+            setTimeout(() => nameInput.classList.remove('error'), 400);
+            return;
+        }
+
+        startPartySequence(nameValue);
+    });
+});
+
+function startPartySequence(name) {
+    const inputSection = document.getElementById('input-section');
+    const animationSection = document.getElementById('animation-section');
+    const welcomeText = document.getElementById('welcome-text');
+    const stickmanContainer = document.getElementById('stickman-container');
+    const stickman = document.getElementById('stickman');
+    
+    // 1. Prepare Welcome Text
+    welcomeText.innerHTML = `Welcome,<br><span class="highlight-name">${name}</span>!`;
+    
+    // 2. Hide Input Section and Show Animation Section
+    inputSection.style.opacity = '0';
+    
+    setTimeout(() => {
+        inputSection.style.display = 'none';
+        animationSection.style.display = 'block';
+        
+        // 3. Start Walking Animation
+        stickman.className = 'stickman walking';
+        // Move container to center screen
+        stickmanContainer.style.left = '50%';
+        stickmanContainer.style.transform = 'translateX(-50%)';
+        
+        // 4. After 3s (walking time), Switch to Celebrating
+        setTimeout(() => {
+            stickman.className = 'stickman celebrating';
+            
+            // 5. After 1.8s (3 jumps of 0.6s), Switch to Waving
+            setTimeout(() => {
+                stickman.className = 'stickman waving';
+                
+                // 6. After 2s of waving, trigger Party Popper and final pose
+                setTimeout(() => {
+                    stickman.className = 'stickman final-pose';
+                    
+                    fireConfetti();
+                    
+                    // Show text with a slight delay so it emphasizes the popper
+                    setTimeout(() => {
+                        welcomeText.classList.add('show');
+                    }, 200);
+                    
+                }, 2000);
+            }, 1800);
+        }, 3000);
+    }, 500); // Wait for fade out
+}
+
+function fireConfetti() {
+    var duration = 4 * 1000;
+    var animationEnd = Date.now() + duration;
+    var defaults = { startVelocity: 35, spread: 360, ticks: 70, zIndex: 0 };
+
+    function randomInRange(min, max) {
+      return Math.random() * (max - min) + min;
+    }
+
+    var interval = setInterval(function() {
+      var timeLeft = animationEnd - Date.now();
+
+      if (timeLeft <= 0) {
+        return clearInterval(interval);
+      }
+
+      var particleCount = 60 * (timeLeft / duration);
+      // since particles fall down, start a bit higher than random
+      confetti({
+        ...defaults, particleCount,
+        origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 }
+      });
+      confetti({
+        ...defaults, particleCount,
+        origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 }
+      });
+    }, 250);
+    
+    // Massive burst in the middle from bottom
+    confetti({
+        particleCount: 200,
+        spread: 120,
+        origin: { y: 0.8, x: 0.5 },
+        startVelocity: 60,
+        colors: ['#ff0000', '#00ff00', '#0000ff', '#fceabb', '#f8b500', '#4facfe', '#00f2fe']
+    });
+    
+    // Second burst right after
+    setTimeout(() => {
+        confetti({
+            particleCount: 150,
+            spread: 140,
+            origin: { y: 0.7, x: 0.5 },
+            startVelocity: 55
+        });
+    }, 300);
+}
+
+</script>
+</body>
+
+</html>
